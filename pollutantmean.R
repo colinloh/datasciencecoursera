@@ -1,5 +1,6 @@
-pollutantmean <- function(directory, pollutant, id=1:332) {
-    source("colinslib.R")
+source("colinslib.R")
+
+pollutantmean <- function(directory, pollutant, id=ALL_STATION_VALUES) {
     
     # Get values from the indicated stations
     station_observations <- getStationValues(directory, id)

@@ -1,4 +1,6 @@
-getStationValues <- function(dir,id=1:332) {
+ALL_STATION_VALUES <- c(1:332)
+
+getStationValues <- function(dir,id=ALL_STATION_VALUES) {
     library(readr)
     origd<-getwd()
     setwd(dir)
@@ -11,10 +13,10 @@ getStationValues <- function(dir,id=1:332) {
       fdata <- read.csv(file(f), colClasses = c("Date","numeric","numeric","integer"))
       
       valid_station_ids <- fdata[["ID"]] %in% id
-      
+
       population <- rbind(population,fdata[valid_station_ids,])
     }
-    print(paste("Total observations from selected Stations:", length(attr(population,"row.names"))))
+    #print(paste("Total observations from selected Stations:", length(attr(population,"row.names"))))
     setwd(origd)    
     population
 }

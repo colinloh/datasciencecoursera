@@ -1,5 +1,6 @@
-complete <- function(directory, id=1:332) {
-    source("colinslib.R")
+source("colinslib.R")
+
+complete <- function(directory, id=ALL_STATION_VALUES) {
     
     population <- getStationValues(directory, id)
     # Init a data frame with the keys and NA for counts.
