@@ -56,26 +56,3 @@ best <- function(state, outcome) {
     state_data[1,]$Hospital.Name
 }
 
-#Q3
-rankhospital <- function(state, outcome, num) {
-    
-    # Get the subset for the given state
-    state_data <- odata[odata$State == state,]
-    if (nrow(state_data) < 1) {
-        stop("invalid state")
-    }
-    
-    # Figure out which outcome column we need
-    target_outcome <- as.character(col_lookup[input==outcome,]$target_col)
-    if (length(target_outcome) < 1) {
-        stop("invalid outcome")
-    }
-    
-    sorted <- state_data[order(
-        state_data[,target_outcome], 
-        state_data$Hospital.Name,
-        na.last=NA
-    )]
-    
-    sorted[num,]$Hospital.Name
-}
