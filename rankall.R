@@ -1,45 +1,15 @@
-# Read Hospital Data File
-readHospitalData <- function() {
-    library(readr)
-    read.csv('./rprog_data_ProgAssignment3-data/hospital-data.csv', colClasses='character')
-}
-
-readOutcomeData <- function() {
-    library(readr)
-    read.csv('./rprog_data_ProgAssignment3-data/outcome-of-care-measures.csv', colClasses='character')
-}
-
-# Ingest the data
-hdata <- readHospitalData()
-odata <- readOutcomeData()
-
-# Map the expected input strings to the corresponding lookup columns
-col_lookup <- data.frame(
-    input <- c(
-        "heart attack", 
-        "heart failure",
-        "pneumonia"
-    ),
-    target_col <- c(
-        "Hospital.30.Day.Death..Mortality..Rates.from.Heart.Attack",
-        "Hospital.30.Day.Death..Mortality..Rates.from.Heart.Failure",
-        "Hospital.30.Day.Death..Mortality..Rates.from.Pneumonia"
-    )
-)
+source("assignment3_lib.R")
 
 #Q4
 rankall <- function(outcome, num) {
     
-    # Figure out which outcome column we need
-    target_outcome <- as.character(col_lookup[input==outcome,]$target_col)
-    if (length(target_outcome) < 1) {
-        stop("invalid outcome")
-    }
-    
-    # Sort the whole thing first
+    outcome_col <- col_lookup(outcome)
+
+    # Instead of calling rankhospital, we will do a full sort first on the dataset,
+    # so no more per-state sorting is needed. Hence more efficient.
     ordered_data <- odata[order(
         odata$State,
-        odata[,target_outcome],
+        suppressWarnings(as.numeric(odata[,outcome_col])),
         odata$Hospital.Name,
         na.last=NA
     ),]
@@ -48,13 +18,16 @@ rankall <- function(outcome, num) {
     hospitals <- vector(mode = "character", length = length(states))
     i <- 1
     for (s in states) {
+        
         state_data <- ordered_data[ordered_data$State == s,]
         if (num == "best") {
-            num <- 1
+            desired_rank <- 1
         } else if (num == "worst") {
-            num <- nrow(state_data)
+            desired_rank <- nrow(state_data)
+        } else {
+            desired_rank <- num
         }
-        hospitals[i] <- state_data[num,]$Hospital.Name
+        hospitals[i] <- state_data[desired_rank,]$Hospital.Name
         i <- i + 1
     }
     results <- data.frame(
